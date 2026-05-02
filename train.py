@@ -1,77 +1,46 @@
-import warnings
-
 import hydra
-import torch
-from hydra.utils import instantiate
-from omegaconf import OmegaConf
+from omegaconf import DictConfig
+from torch.utils.data import DataLoader
+import pandas as pd
 
-from src.datasets.data_utils import get_dataloaders
-from src.trainer import Trainer
-from src.utils.init_utils import set_random_seed, setup_saving_and_logging
-
-warnings.filterwarnings("ignore", category=UserWarning)
-
+from src.datasets.fashion_dataset import FashionDataset
+from src.model.blip_model import BlipCaptioner
+from src.trainer.trainer import BlipTrainer
 
 @hydra.main(version_base=None, config_path="src/configs", config_name="baseline")
-def main(config):
-    """
-    Main script for training. Instantiates the model, optimizer, scheduler,
-    metrics, logger, writer, and dataloaders. Runs Trainer to train and
-    evaluate the model.
+def main(cfg: DictConfig):
+    # загрузка данных
+    df = pd.read_csv(cfg.data.metadata_path, error_bad_lines=False)
+    df = df.sample(cfg.data.train_size + cfg.data.test_size, random_state=42)
+    train_df = df.iloc[:cfg.data.train_size]
+    val_df   = df.iloc[cfg.data.train_size:]
 
-    Args:
-        config (DictConfig): hydra experiment config.
-    """
-    set_random_seed(config.trainer.seed)
+    # модель
+    model = BlipCaptioner(cfg.model.name)
 
-    project_config = OmegaConf.to_container(config)
-    logger = setup_saving_and_logging(config)
-    writer = instantiate(config.writer, logger, project_config)
+    # датасеты и загрузчики
+    train_ds = FashionDataset(cfg.data.image_dir, train_df, model.processor)
+    val_ds   = FashionDataset(cfg.data.image_dir, val_df, model.processor)
 
-    if config.trainer.device == "auto":
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-    else:
-        device = config.trainer.device
+    train_loader = DataLoader(train_ds, batch_size=cfg.data.batch_size,
+                              shuffle=True, num_workers=cfg.data.num_workers)
+    val_loader   = DataLoader(val_ds, batch_size=cfg.data.batch_size,
+                              shuffle=False, num_workers=cfg.data.num_workers)
 
-    # setup data_loader instances
-    # batch_transforms should be put on device
-    dataloaders, batch_transforms = get_dataloaders(config, device)
-
-    # build model architecture, then print to console
-    model = instantiate(config.model).to(device)
-    logger.info(model)
-
-    # get function handles of loss and metrics
-    loss_function = instantiate(config.loss_function).to(device)
-    metrics = instantiate(config.metrics)
-
-    # build optimizer, learning rate scheduler
-    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = instantiate(config.optimizer, params=trainable_params)
-    lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer)
-
-    # epoch_len = number of iterations for iteration-based training
-    # epoch_len = None or len(dataloader) for epoch-based training
-    epoch_len = config.trainer.get("epoch_len")
-
-    trainer = Trainer(
+    # обучение
+    trainer = BlipTrainer(
         model=model,
-        criterion=loss_function,
-        metrics=metrics,
-        optimizer=optimizer,
-        lr_scheduler=lr_scheduler,
-        config=config,
-        device=device,
-        dataloaders=dataloaders,
-        epoch_len=epoch_len,
-        logger=logger,
-        writer=writer,
-        batch_transforms=batch_transforms,
-        skip_oom=config.trainer.get("skip_oom", True),
+        train_loader=train_loader,
+        val_loader=val_loader,
+        lr=cfg.training.learning_rate,
+        epochs=cfg.training.epochs,
+        device=cfg.training.device
     )
+    trained_model = trainer.fit()
 
-    trainer.train()
-
+    # сохранение
+    trained_model.model.save_pretrained(cfg.paths.model_save_path)
+    trained_model.processor.save_pretrained(cfg.paths.model_save_path)
 
 if __name__ == "__main__":
     main()
