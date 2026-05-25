@@ -1,1 +1,0 @@
-from src.model.blip_model import BlipCaptioner
