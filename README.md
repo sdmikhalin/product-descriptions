@@ -5,7 +5,7 @@ This project focuses on the automated generation of concise and professional pro
 ## 📂 Project Structure
 
 The repository is organized into three main notebooks and two files:
-1.  **data.ipynb**: Data collection, filtering, and preprocessing.
+1.  **dataset.ipynb**: Data collection, filtering, and preprocessing.
 2.  **model.ipynb**: Model configuration and fine-tuning process using LoRA.
 3.  **evaluation.ipynb**: Model testing, inference, and performance comparison.
 4.  **comparison_results.csv**: File with the comparison results. It contains generated product descriptions for both models (basic and trained with LoRA) based on a test sample, including target names. 
