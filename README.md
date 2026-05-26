@@ -4,10 +4,12 @@ This project focuses on the automated generation of concise and professional pro
 
 ## 📂 Project Structure
 
-The repository is organized into three main notebooks:
+The repository is organized into three main notebooks and two files:
 1.  **data.ipynb**: Data collection, filtering, and preprocessing.
 2.  **model.ipynb**: Model configuration and fine-tuning process using LoRA.
 3.  **evaluation.ipynb**: Model testing, inference, and performance comparison.
+4.  **comparison_results.csv**: File with the comparison results. It contains generated product descriptions for both models (basic and trained with LoRA) based on a test sample, including target names. 
+5.  **comparison_results.csv**: an image with examples of generated descriptions for both models.
 
 ## 📊 Datasets
 
@@ -42,6 +44,8 @@ The model was tested on 497 samples from the test set. The fine-tuned LoRA adapt
 *   **Accessories**: 0.8909 (+2.5%)
 *   **Clothing**: 0.8907 (+2.1%)
 *   **Electronics**: 0.8587 (+0.5%)
+
+
 
 ## 🚀 Live Demo
 
