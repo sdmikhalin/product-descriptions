@@ -9,7 +9,7 @@ The repository is organized into three main notebooks and two files:
 2.  **model.ipynb**: Model configuration and fine-tuning process using LoRA.
 3.  **evaluation.ipynb**: Model testing, inference, and performance comparison.
 4.  **comparison_results.csv**: File with the comparison results. It contains generated product descriptions for both models (basic and trained with LoRA) based on a test sample, including target names. 
-5.  **comparison_results.csv**: an image with examples of generated descriptions for both models.
+5.  **comparison_examples.png**: an image with examples of generated descriptions for both models.
 
 ## 📊 Datasets
 
