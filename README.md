@@ -13,7 +13,7 @@ The repository is organized into three main notebooks and two files:
 
 ## 📊 Datasets
 
-The final training set consists of **9,422 curated items** combined from the following sources:
+The final training set consists of **9,442 curated items** combined from the following sources:
 *   **Electronics**: [Amazon Reviews 2023](https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023)
 *   **Apparel & Accessories**: [Fashion Product Images Small](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small)
 
