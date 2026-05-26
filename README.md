@@ -11,7 +11,7 @@ The repository is organized into three main notebooks:
 
 ## 📊 Datasets
 
-The final training set consists of **10,000 curated items** combined from the following sources:
+The final training set consists of **9,422 curated items** combined from the following sources:
 *   **Electronics**: [Amazon Reviews 2023](https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023)
 *   **Apparel & Accessories**: [Fashion Product Images Small](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small)
 
@@ -27,21 +27,21 @@ The model was trained to generate marketplace-ready titles (Brand, Gender/Audien
 
 ## 📈 Evaluation Results
 
-The model was tested on 500 samples from the test set. The fine-tuned LoRA adapter significantly outperforms the Zero-shot base model across all language metrics.
+The model was tested on 497 samples from the test set. The fine-tuned LoRA adapter significantly outperforms the Zero-shot base model across all language metrics.
 
 ### Overall Performance
 
 | Metric | Zero-shot (Base) | Fine-tuned (LoRA) | Improvement |
 | :--- | :---: | :---: | :---: |
-| **BLEU-1** | 0.1001 | 0.3502 | **+249.9%** |
-| **BLEU-4** | 0.0105 | 0.1097 | **+944.0%** |
+| **BLEU-1** | 0.2639 | 0.3502 | **+32.7%** |
+| **BLEU-4** | 0.0216 | 0.1097 | **+408.7%** |
 | **ROUGE-L** | 0.3159 | 0.4238 | **+34.2%** |
-| **BERTScore-F1** | 0.8362 | 0.8801 | **+5.3%** |
+| **BERTScore-F1** | 0.8655 | 0.8800 | **+1.7%** |
 
 ### Category-wise Highlights (BERTScore-F1)
-*   **Accessories**: 0.8941 (+8.9%)
-*   **Clothing**: 0.8889 (+6.2%)
-*   **Electronics**: 0.8587 (+1.4%)
+*   **Accessories**: 0.8909 (+2.5%)
+*   **Clothing**: 0.8907 (+2.1%)
+*   **Electronics**: 0.8587 (+0.5%)
 
 ## 🚀 Live Demo
 
