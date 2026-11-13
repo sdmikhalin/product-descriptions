@@ -1,0 +1,17 @@
+# Only requirements.txt and app.py are needed in the build context.
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+README.md
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.cache/
+hf-cache/
+*.safetensors
+*.bin
+.DS_Store

@@ -52,4 +52,45 @@ The model was tested on 497 samples from the test set. The fine-tuned LoRA adapt
 You can try the model prototype here:
 🔗 **[E-commerce Description Generator Space](https://huggingface.co/spaces/sdmikhalin/new_space)**
 
+## 🐳 Запуск в Docker
+
+Код демо лежит в папке [`demo/`](demo/) (Gradio-приложение: Qwen2.5-VL-3B-Instruct + LoRA-адаптер
+[`sdmikhalin/qwen25vl-3b-ecommerce-lora`](https://huggingface.co/sdmikhalin/qwen25vl-3b-ecommerce-lora)).
+Веса модели в образ не входят: при первом запуске они скачиваются (~7.5 ГБ) в кэш Hugging Face
+в volume `hf-cache` и при следующих запусках берутся оттуда.
+
+### CPU (macOS / Linux, в т.ч. Apple Silicon)
+
+```bash
+docker build -t product-desc-demo demo
+docker run --rm -p 7860:7860 -v hf-cache:/hf-cache product-desc-demo
+```
+
+Откройте http://localhost:7860, когда в логах появится `Running on local URL`.
+
+- Модель на CPU грузится в `bfloat16` и занимает ~8 ГБ RAM. В Docker Desktop выделите контейнерам
+  не меньше 10 ГБ памяти (Settings → Resources).
+- Генерация одного описания на CPU занимает 1–2 минуты.
+- Тип данных можно поменять так: `-e TORCH_DTYPE=float32` (нужно ~16 ГБ RAM).
+
+### NVIDIA GPU (Linux-сервер)
+
+На сервере нужны драйвер NVIDIA (с поддержкой CUDA 13.2) и
+[NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+
+```bash
+docker build -f demo/Dockerfile.gpu -t product-desc-demo:gpu demo
+docker run --rm --gpus all -p 7860:7860 -v hf-cache:/hf-cache product-desc-demo:gpu
+```
+
+### Полезное
+
+- Чтобы использовать уже скачанный на хосте кэш, примонтируйте его вместо volume:
+  `-v ~/.cache/huggingface:/hf-cache`.
+- Удалить скачанные веса: `docker volume rm hf-cache`.
+- Если первая загрузка весов идёт заметно медленнее, чем позволяет канал, отключите
+  Xet-протокол Hugging Face и качайте по обычному HTTP: добавьте `-e HF_HUB_DISABLE_XET=1` в `docker run`.
+- Пока модель скачивается и загружается, контейнер в статусе `health: starting`;
+  `healthy` — значит, интерфейс готов.
+
 ---
